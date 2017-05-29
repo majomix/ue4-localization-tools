@@ -1,0 +1,87 @@
+﻿<Window x:Class="UE4PakEditor.View.MainEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:s="clr-namespace:System;assembly=mscorlib"
+        xmlns:view="clr-namespace:UE4PakEditor.View;assembly="
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
+        Title="Unreal Engine 4 Pak Editor" Height="350" Width="525" x:Name="editorWindow">
+    <DockPanel>
+        <DockPanel.Resources>
+            <view:MultiValueConverter x:Key="multiValueConverter" />
+        </DockPanel.Resources>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Open Archive" Command="{Binding OpenFileCommand}" CommandParameter="{Binding}" />
+                <Separator />
+                <MenuItem Header="_Extract Selected" Command="{Binding ExtractSelectedCommand}" CommandParameter="{Binding}" />
+                <MenuItem Header="Extract _All" Command="{Binding ExtractAllCommand}" CommandParameter="{Binding}" />
+                <MenuItem Header="_Import from Directory" Command="{Binding ImportCommand}">
+                    <MenuItem.CommandParameter>
+                        <MultiBinding Converter="{StaticResource multiValueConverter}">
+                            <Binding />
+                            <Binding>
+                                <Binding.Source>
+                                    <s:Boolean>False</s:Boolean>
+                                </Binding.Source>
+                            </Binding>
+                        </MultiBinding>
+                    </MenuItem.CommandParameter>
+                </MenuItem>
+                <MenuItem Header="_Import from Directory and Save As..." Command="{Binding ImportCommand}">
+                    <MenuItem.CommandParameter>
+                        <MultiBinding Converter="{StaticResource multiValueConverter}">
+                            <Binding />
+                            <Binding>
+                                <Binding.Source>
+                                    <s:Boolean>True</s:Boolean>
+                                </Binding.Source>
+                            </Binding>
+                        </MultiBinding>
+                    </MenuItem.CommandParameter>
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="E_xit" Command="{Binding CloseApplicationCommand}" CommandParameter="{Binding}" />
+            </MenuItem>
+            <MenuItem Header="_About" Command="{Binding OpenAboutWindowCommand}" />
+        </Menu>
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="100" />
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
+            <StatusBarItem>
+                <TextBlock Text="Ready..." />
+            </StatusBarItem>
+            <Separator Grid.Column="1" />
+            <StatusBarItem Grid.Column="2">
+                <TextBlock Text="{Binding LoadedFilePath, StringFormat=Currently loaded: \{0\}}" />
+            </StatusBarItem>
+            <Separator Grid.Column="3" />
+            <StatusBarItem Grid.Column="4">
+                <ProgressBar Visibility="Visible" Value="{Binding CurrentProgress, Mode=OneWay}" Width="90" Height="16" />
+            </StatusBarItem>
+        </StatusBar>
+        <DataGrid AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" ItemsSource="{Binding Model.Archive.Directory.Entries}" HorizontalGridLinesBrush="Gainsboro" VerticalGridLinesBrush="Gainsboro">
+            <DataGrid.Columns>
+                <DataGridTextColumn IsReadOnly="True" Header="Name" Binding="{Binding Name}" Width="6*" />
+                <DataGridTextColumn IsReadOnly="True" Header="Size" Binding="{Binding UncompressedSize}" Width="*" />
+                <DataGridTemplateColumn Header="Extract?" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="{Binding Extract, UpdateSourceTrigger=PropertyChanged}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
+</Window>

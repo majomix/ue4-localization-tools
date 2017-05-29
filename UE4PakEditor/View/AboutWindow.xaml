@@ -1,0 +1,38 @@
+﻿<Window x:Class="UE4PakEditor.View.AboutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="About Unreal Engine 4 Pak Editor" Height="319" Width="300" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+        <TextBlock HorizontalAlignment="Center" TextAlignment="Center">
+            <LineBreak />
+            Part of Unreal Engine 4 Localization Tools.
+            <LineBreak />
+            © MixerX 2015 for 
+            <Hyperlink NavigateUri="http://www.lokalizacie.sk" RequestNavigate="Hyperlink_RequestNavigate">www.lokalizacie.sk</Hyperlink>.
+            <LineBreak />
+        </TextBlock>
+        <TextBlock Grid.Row="1" Margin="10" TextWrapping="Wrap">
+        Usage:
+            <LineBreak />
+            1. Full graphical interface
+            <LineBreak />
+            Simply run the application.
+            <LineBreak />
+            <LineBreak />
+            2. Action-based graphical interface
+            <LineBreak />
+            Run the application with a parameter.
+            
+            Allowed parameters are:
+            <LineBreak />-import or -export
+            <LineBreak />-pak [path]
+            <LineBreak />-dir [path]
+            <LineBreak />
+            <LineBreak />Path might be relative or absolute.
+        </TextBlock>
+    </Grid>
+</Window>

@@ -1,0 +1,14 @@
+﻿<Window x:Class="UE4TextConverter.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="UE4 Text Converter" Height="350" Width="525" Loaded="Window_Loaded">
+    <Grid>
+        <DataGrid ItemsSource="{Binding SpecificList}" AutoGenerateColumns="False" HorizontalGridLinesBrush="Gainsboro" VerticalGridLinesBrush="Gainsboro">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" Binding="{Binding EntryId}" Width="2*" />
+                <DataGridTextColumn Header="Text" Binding="{Binding Entry}" Width="4*" />
+                <DataGridTextColumn Header="Hash" Binding="{Binding Hash}" Width="*" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>
