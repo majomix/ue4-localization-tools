@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
@@ -17,6 +18,15 @@ namespace UE4PakEditor.Model
         public int ChunkSize { get; set; }
         public bool Extract { get; set; }
         public string Import { get; set; }
+        public bool Padded { get; set; }
+        public long NextOffset;
+        public long RealSize;
+        public List<PakChunkDescriptor> Chunks { get; }
+
+        public PakEntry()
+        {
+            Chunks = new List<PakChunkDescriptor>();
+        }
 
         public bool Equals(PakEntry entry)
         {

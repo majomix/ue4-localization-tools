@@ -27,6 +27,18 @@ namespace UE4PakEditor.Model
             Write(entry.UncompressedSize);
             Write(entry.CompressionType);
             Write(entry.Hash);
+
+            if (entry.CompressionType != 0)
+            {
+                Write(entry.Chunks.Count);
+
+                foreach (var chunk in entry.Chunks)
+                {
+                    Write(chunk.ChunkOffset);
+                    Write(chunk.ChunkEnd);
+                }
+            }
+
             Write(entry.EncryptionType);
             Write(entry.ChunkSize);
         }

@@ -9,12 +9,12 @@ namespace UE4PakEditor.ViewModel
 {
     internal class OneTimeRunViewModel : BaseViewModel
     {
-        private string myTargetDirectory;
-        private string myTargetPath { get; set; }
+        private string _targetDirectory;
 
+        private string TargetPath { get; set; }
         public bool? Export { get; set; }
-        public ICommand ExtractByParameterCommand { get; private set; }
-        public ICommand ImportByParameterCommand { get; private set; }
+        public ICommand ExtractByParameterCommand { get; }
+        public ICommand ImportByParameterCommand { get; }
 
         public OneTimeRunViewModel()
         {
@@ -27,21 +27,21 @@ namespace UE4PakEditor.ViewModel
 
         public void Extract()
         {
-            if(myTargetDirectory != null && LoadedFilePath != null)
+            if (_targetDirectory != null && LoadedFilePath != null)
             {
                 LoadPakFile();
-                ExtractWithPredicate(myTargetDirectory, _ => true);
+                ExtractWithPredicate(_targetDirectory, _ => true);
             }
         }
 
         public void Import()
         {
-            if (myTargetDirectory != null && Directory.Exists(myTargetDirectory) && LoadedFilePath != null)
+            if (_targetDirectory != null && Directory.Exists(_targetDirectory) && LoadedFilePath != null)
             {
                 LoadPakFile();
-                ResolveNewFiles(myTargetDirectory);
+                ResolveNewFiles(_targetDirectory);
 
-                if (myTargetPath != null) SavePakFile(myTargetPath);
+                if (TargetPath != null) SavePakFile(TargetPath);
                 else SavePakFileWithRandomNameAndReplace();
             }
         }
@@ -51,9 +51,10 @@ namespace UE4PakEditor.ViewModel
             OptionSet options = new OptionSet()
                 .Add("export", value => Export = true)
                 .Add("import", value => Export = false)
-                .Add("target=", value => myTargetPath = CreateFullPath(value, false))
+                .Add("target=", value => TargetPath = CreateFullPath(value, false))
                 .Add("pak=", value => LoadedFilePath = CreateFullPath(value, true))
-                .Add("dir=", value => myTargetDirectory = CreateFullPath(value, false));
+                .Add("padding", value => Padding = true)
+                .Add("dir=", value => _targetDirectory = CreateFullPath(value, false));
 
             options.Parse(Environment.GetCommandLineArgs());
         }

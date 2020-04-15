@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -12,6 +11,8 @@ namespace UE4PakEditor.ViewModel
         private int myCurrentProgress;
         private string myLoadedFilePath;
         private string myCurrentFile;
+
+        public bool Padding { get; set; }
 
         public PakEditor Model { get; protected set; }
         public string LoadedFilePath
@@ -70,14 +71,14 @@ namespace UE4PakEditor.ViewModel
 
         public void ExtractWithPredicate(string directory, Func<PakEntry, bool> function)
         {
-            using (FileStream fileStream = File.Open(LoadedFilePath, FileMode.Open))
+            using (var fileStream = File.Open(LoadedFilePath, FileMode.Open))
             {
-                PakBinaryReader reader = new PakBinaryReader(fileStream);
-                IEnumerable<PakEntry> pakEntryCollection = Model.Archive.Directory.Entries.Where(function);
+                var reader = new PakBinaryReader(fileStream);
+                var pakEntryCollection = Model.Archive.Directory.Entries.Where(function).ToList();
                 long currentSize = 0;
                 long totalSize = pakEntryCollection.Sum(_ => _.UncompressedSize);
 
-                foreach (PakEntry pakEntry in pakEntryCollection)
+                foreach (var pakEntry in pakEntryCollection)
                 {
                     if (reader.BaseStream.Position != pakEntry.Offset) reader.BaseStream.Seek(pakEntry.Offset, SeekOrigin.Begin);
                     Model.ExtractFile(directory, pakEntry, reader);
@@ -90,26 +91,29 @@ namespace UE4PakEditor.ViewModel
 
         public void SavePakFile(string path)
         {
-            using (FileStream inputFileStream = File.Open(LoadedFilePath, FileMode.Open))
+            using (var inputFileStream = File.Open(LoadedFilePath, FileMode.Open))
             {
-                PakBinaryReader reader = new PakBinaryReader(inputFileStream);
-
-                using (FileStream outputFileStream = File.Open(path, FileMode.Create))
+                using (var reader = new PakBinaryReader(inputFileStream))
                 {
-                    using (PakBinaryWriter writer = new PakBinaryWriter(outputFileStream))
+                    using (var outputFileStream = File.Open(path, FileMode.Create))
                     {
-                        long currentSize = 0;
-                        long totalSize = Model.Archive.Directory.Entries.Sum(_ => _.UncompressedSize);
-
-                        foreach (PakEntry entry in Model.Archive.Directory.Entries)
+                        using (var writer = new PakBinaryWriter(outputFileStream))
                         {
-                            Model.SaveDataEntry(reader, writer, entry);
-                            CurrentProgress = (int)(currentSize * 100.0 / totalSize);
-                            CurrentFile = entry.Name;
-                            currentSize += entry.UncompressedSize;
-                        }
+                            long currentSize = 0;
+                            long totalSize = Model.Archive.Directory.Entries.Sum(_ => _.UncompressedSize);
 
-                        Model.SavePakFileStructure(writer);
+                            for (var i = 0; i < Model.Archive.Directory.Entries.Count; i++)
+                            {
+                                var entry = Model.Archive.Directory.Entries[i];
+                                
+                                Model.SaveDataEntry(reader, writer, entry, Padding && i + 1 != Model.Archive.Directory.Entries.Count);
+                                CurrentProgress = (int) (currentSize * 100.0 / totalSize);
+                                CurrentFile = entry.Name;
+                                currentSize += entry.UncompressedSize;
+                            }
+
+                            Model.SavePakFileStructure(writer);
+                        }
                     }
                 }
             }
@@ -134,16 +138,19 @@ namespace UE4PakEditor.ViewModel
                 string[] tokens = file.Split(new string[] { directory + @"\" }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (string token in tokens)
                 {
-                    if (!String.IsNullOrWhiteSpace(token))
+                    if (!string.IsNullOrWhiteSpace(token))
                     {
                         string result = token.Replace(@"\", @"/");
-                        PakEntry currentEntry = Model.Archive.Directory.Entries.SingleOrDefault(_ => _.Name == result);
+                        var currentEntry = Model.Archive.Directory.Entries.SingleOrDefault(_ => _.Name == result);
 
                         if (currentEntry != null)
                         {
                             currentEntry.Import = file;
                             currentEntry.UncompressedSize = new FileInfo(file).Length;
                             currentEntry.CompressedSize = currentEntry.UncompressedSize;
+                            currentEntry.Chunks.Clear();
+                            currentEntry.CompressionType = 0;
+                            currentEntry.EncryptionType = 0;
                         }
                     }
                 }
