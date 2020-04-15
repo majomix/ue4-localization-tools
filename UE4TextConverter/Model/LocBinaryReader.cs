@@ -3,25 +3,37 @@ using System.Text;
 
 namespace UE4TextConverter.Model
 {
-    internal class LocBinaryReader : BinaryReader
+    public class LocBinaryReader : BinaryReader
     {
-        public LocBinaryReader(FileStream fileStream, Encoding encoding)
-            : base(fileStream, encoding) { }
+        public LocBinaryReader(FileStream fileStream)
+            : base(fileStream) { }
 
-        private int decryptSize(uint size)
+        private int DecryptSize(int size)
         {
-            return (int)((size ^ 0xFFFFFFFF) + 1);
-        }
-
-        private int readEncryptedUInt32()
-        {
-            return decryptSize(ReadUInt32());
+            return (int)(size ^ 0xFFFFFFFF);
         }
 
         public override string ReadString()
         {
-            int length = readEncryptedUInt32();
-            return new string(ReadChars(length)).TrimEnd('\0');
+            var length = ReadInt32();
+
+            if (length == 0)
+                return string.Empty;
+
+            var encoding = Encoding.UTF8;
+
+            if (length < 0)
+            {
+                length = DecryptSize(length) + 1;
+                encoding = Encoding.Unicode;
+            }
+
+            if (Equals(encoding, Encoding.Unicode))
+            {
+                length *= 2;
+            }
+
+            return encoding.GetString(ReadBytes(length)).Trim('\0');
         }
     }
 }

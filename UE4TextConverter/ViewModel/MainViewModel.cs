@@ -1,57 +1,58 @@
 ﻿using NDesk.Options;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UE4TextConverter.Model;
 
 namespace UE4TextConverter.ViewModel
 {
     internal class MainViewModel : BaseViewModel
     {
-        private string myLocresFile;
-        private string myTextFile;
-        private bool? myExport;
+        private string _locresFile;
+        private string _textFile;
+        private bool? _export;
+        private bool _compact;
+        private bool _sortById;
 
         public string LocresFile
         {
-            get { return myLocresFile; }
+            get => _locresFile;
             set
             {
-                if(myLocresFile != value)
+                if (_locresFile != value)
                 {
-                    myLocresFile = value;
-                    OnPropertyChanged("LocresFile");
+                    _locresFile = value;
+                    OnPropertyChanged(nameof(LocresFile));
                 }
             }
         }
         public string TextFile
         {
-            get { return myTextFile; }
+            get => _textFile;
             set
             {
-                if (myTextFile != value)
+                if (_textFile != value)
                 {
-                    myTextFile = value;
-                    OnPropertyChanged("TextFile");
+                    _textFile = value;
+                    OnPropertyChanged(nameof(TextFile));
                 }
             }
         }
-        public TextConverter Converter { get; private set; }
-        public List<TextEntry> SpecificList { get { return Converter.LocSections.First().Entries; } }
+        public TextConverter Converter { get; }
+
         public bool CloseWindow { get; private set; }
         
         public MainViewModel()
         {
             ParseCommandLine();
+            CloseWindow = true;
             Converter = new TextConverter();
 
-            if(myExport != null)
+            if(_export != null)
             {
-                if(myExport == true)
+                if(_export == true)
                 {
                     Converter.LoadLocresFile(LocresFile);
-                    Converter.WriteTextFile(TextFile);
+                    Converter.WriteTextFile(TextFile, _compact, _sortById);
                 }
                 else
                 {
@@ -66,8 +67,10 @@ namespace UE4TextConverter.ViewModel
             OptionSet options = new OptionSet()
                 .Add("locres=", value => LocresFile = Path.GetFullPath(value))
                 .Add("txt=", value => TextFile = Path.GetFullPath(value))
-                .Add("export", value => myExport = true)
-                .Add("import", value => myExport = false)
+                .Add("export", value => _export = true)
+                .Add("import", value => _export = false)
+                .Add("compact", value => _compact = true)
+                .Add("sort", value => _sortById = true)
                 .Add("close", value => CloseWindow = true);
 
             options.Parse(Environment.GetCommandLineArgs());

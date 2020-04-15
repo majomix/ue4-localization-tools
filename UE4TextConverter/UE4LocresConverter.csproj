@@ -80,6 +80,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Model\LocBinaryWriter.cs" />
+    <Compile Include="Model\LocresFile.cs" />
     <Compile Include="ViewModel\BaseViewModel.cs" />
     <Compile Include="Model\LocBinaryReader.cs" />
     <Compile Include="Model\LocSection.cs" />

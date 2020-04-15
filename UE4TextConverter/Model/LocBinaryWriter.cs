@@ -15,6 +15,12 @@ namespace UE4TextConverter.Model
 
         public override void Write(string value)
         {
+            if (string.IsNullOrEmpty(value))
+            {
+                Write(0);
+                return;
+            }
+
             value = value + '\0';
             Write(encryptSize(value.Length));
             byte[] buffer = Encoding.Unicode.GetBytes(value);
