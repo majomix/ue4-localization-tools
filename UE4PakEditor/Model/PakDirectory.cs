@@ -6,7 +6,7 @@ namespace UE4PakEditor.Model
     {
         public string Name { get; set; }
         public int NumberOfEntries { get; set; }
-        public List<PakEntry> Entries { get; private set; }
+        public List<PakEntry> Entries { get; set; }
 
         public PakDirectory()
         {

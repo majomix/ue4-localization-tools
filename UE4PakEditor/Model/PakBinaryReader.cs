@@ -52,7 +52,7 @@ namespace UE4PakEditor.Model
             PakEntry pakEntry = new PakEntry();
 
             pakEntry.Name = name;
-            pakEntry.Offset = ReadInt64();  
+            pakEntry.Offset = ReadInt64();
             pakEntry.CompressedSize = ReadInt64();
             pakEntry.UncompressedSize = ReadInt64();
             pakEntry.CompressionType = ReadInt32();

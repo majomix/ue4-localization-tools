@@ -1,19 +1,34 @@
-﻿<Window x:Class="UE4PakEditor.View.OneTimeRunWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Slovenská lokalizácia The Vanishing of Ethan Carter Redux" Height="250" Width="450" ResizeMode="NoResize">
+﻿<Window
+    x:Class="UE4PakEditor.View.OneTimeRunWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Slovenská lokalizácia Jedi: Fallen Order"
+    Width="450"
+    Height="250"
+    ResizeMode="NoResize">
     <DockPanel>
-        <TextBlock DockPanel.Dock="Bottom" HorizontalAlignment="Center" Text="Spracúva sa viac než 5 GB dát. Čakajte, prosím..." />
-        <Grid Height="50" DockPanel.Dock="Bottom">
-            <ProgressBar Value="{Binding CurrentProgress, Mode=OneWay}" />
-            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding CurrentProgress, StringFormat={}{0} %}" />
+        <TextBlock
+            HorizontalAlignment="Center"
+            DockPanel.Dock="Bottom"
+            Text="Spracúva sa viac než 5 GB dát. Čakajte, prosím..." />
+        <Grid
+            Height="50"
+            DockPanel.Dock="Bottom">
+            <ProgressBar
+                Value="{Binding CurrentProgress, Mode=OneWay}" />
+            <TextBlock
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Text="{Binding CurrentProgress, StringFormat={}{0} %}" />
         </Grid>
-        
-        <Grid x:Name="imageGrid">
+
+        <Grid
+            x:Name="imageGrid">
             <Grid.Background>
                 <ImageBrush>
                     <ImageBrush.ImageSource>
-                        <BitmapImage UriSource="EthanCarter.bmp" />
+                        <BitmapImage
+                            UriSource="Jedi.bmp" />
                     </ImageBrush.ImageSource>
                 </ImageBrush>
             </Grid.Background>

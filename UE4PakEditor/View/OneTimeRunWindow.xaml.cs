@@ -20,19 +20,22 @@ namespace UE4PakEditor.View
         protected override void OnContentRendered(EventArgs e)
         {
             OneTimeRunViewModel oneTimeRunViewModel = DataContext as OneTimeRunViewModel;
-            if(oneTimeRunViewModel != null)
+            if (oneTimeRunViewModel != null)
             {
-                if(oneTimeRunViewModel.Export == null)
+                switch (oneTimeRunViewModel.Action)
                 {
-                    Close();
-                }
-                else if (oneTimeRunViewModel.Export == true)
-                {
-                    oneTimeRunViewModel.ExtractByParameterCommand.Execute(oneTimeRunViewModel);
-                }
-                else
-                {
-                    oneTimeRunViewModel.ImportByParameterCommand.Execute(oneTimeRunViewModel);
+                    case EditorAction.None:
+                        Close();
+                        return;
+                    case EditorAction.Export:
+                        oneTimeRunViewModel.ExtractByParameterCommand.Execute(oneTimeRunViewModel);
+                        break;
+                    case EditorAction.Import:
+                        oneTimeRunViewModel.ImportByParameterCommand.Execute(oneTimeRunViewModel);
+                        break;
+                    case EditorAction.Create:
+                        oneTimeRunViewModel.CreateByParameterCommand.Execute(oneTimeRunViewModel);
+                        break;
                 }
             }
         }

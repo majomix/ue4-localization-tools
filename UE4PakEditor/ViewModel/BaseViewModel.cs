@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -27,6 +28,9 @@ namespace UE4PakEditor.ViewModel
                 }
             }
         }
+
+        public string MountPoint { get; set; }
+
         public string CurrentFile
         {
             get { return myCurrentFile; }
@@ -80,6 +84,9 @@ namespace UE4PakEditor.ViewModel
 
                 foreach (var pakEntry in pakEntryCollection)
                 {
+                    if (pakEntry.Offset == -1)
+                        continue;
+
                     if (reader.BaseStream.Position != pakEntry.Offset) reader.BaseStream.Seek(pakEntry.Offset, SeekOrigin.Begin);
                     Model.ExtractFile(directory, pakEntry, reader);
                     CurrentProgress = (int)(currentSize * 100.0 / totalSize);
@@ -153,6 +160,57 @@ namespace UE4PakEditor.ViewModel
                             currentEntry.EncryptionType = 0;
                         }
                     }
+                }
+            }
+        }
+
+        public void CreateNewPak(string directory, string targetPath)
+        {
+            var entries = new List<PakEntry>();
+
+            foreach (string file in Directory.GetFiles(directory, "*", SearchOption.AllDirectories))
+            {
+                string[] tokens = file.Split(new string[] { directory + @"\" }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string token in tokens)
+                {
+                    if (!string.IsNullOrWhiteSpace(token))
+                    {
+                        string result = token.Replace(@"\", @"/");
+                        var currentEntry = new PakEntry
+                        {
+                            Name = result,
+                            Import = file,
+                            UncompressedSize = new FileInfo(file).Length,
+                            CompressedSize = new FileInfo(file).Length,
+                            CompressionType = 0,
+                            EncryptionType = 0,
+                        };
+
+                        entries.Add(currentEntry);
+                    }
+                }
+            }
+
+            Model.CreateNewPakFile(MountPoint, entries);
+
+            using (var outputFileStream = File.Open(targetPath, FileMode.Create))
+            {
+                using (var writer = new PakBinaryWriter(outputFileStream))
+                {
+                    long currentSize = 0;
+                    long totalSize = Model.Archive.Directory.Entries.Sum(_ => _.UncompressedSize);
+
+                    for (var i = 0; i < Model.Archive.Directory.Entries.Count; i++)
+                    {
+                        var entry = Model.Archive.Directory.Entries[i];
+
+                        Model.CreateDataEntry(writer, entry, Padding && i + 1 != Model.Archive.Directory.Entries.Count);
+                        CurrentProgress = (int)(currentSize * 100.0 / totalSize);
+                        CurrentFile = entry.Name;
+                        currentSize += entry.UncompressedSize;
+                    }
+
+                    Model.SavePakFileStructure(writer);
                 }
             }
         }

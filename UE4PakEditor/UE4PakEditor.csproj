@@ -104,6 +104,7 @@
     <Compile Include="Model\Options.cs" />
     <Compile Include="Model\PakChunkDescriptor.cs" />
     <Compile Include="ViewModel\Commands\AbstractWorkerCommand.cs" />
+    <Compile Include="ViewModel\Commands\CreateByParameterCommand.cs" />
     <Compile Include="ViewModel\Commands\ImportByParameterCommand.cs" />
     <Compile Include="ViewModel\Commands\ExtractByParameterCommand.cs" />
     <Compile Include="ViewModel\Commands\CloseApplicationCommand.cs" />

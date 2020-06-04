@@ -193,5 +193,39 @@ namespace UE4PakEditor.Model
                 return sha1.ComputeHash(input);
             }
         }
+
+        public void CreateNewPakFile(string mountPoint, List<PakEntry> entries)
+        {
+            Archive = new PakFileStructure
+            {
+                Signature = 1517228769,
+                Version = 7,
+                Directory = new PakDirectory
+                {
+                    Name = mountPoint,
+                    Entries = entries,
+                    NumberOfEntries = entries.Count
+                }
+            };
+        }
+
+        public void CreateDataEntry(PakBinaryWriter writer, PakEntry pakEntry, bool usePadding)
+        {
+            pakEntry.Offset = writer.BaseStream.Position;
+
+            var bytes = File.ReadAllBytes(pakEntry.Import);
+            pakEntry.Hash = HashBytes(bytes);
+            writer.Write(pakEntry, true);
+            writer.Write(bytes);
+
+            if (usePadding && pakEntry.Padded)
+            {
+                var toWrite = 2048 - writer.BaseStream.Position % 2048;
+                if (toWrite != 2048)
+                {
+                    writer.Write(new byte[toWrite]);
+                }
+            }
+        }
     }
 }
