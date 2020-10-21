@@ -262,7 +262,7 @@ namespace UE4TextConverter.Model
                                 writer.Write(textEntry.Hash2);
                             }
 
-                            writer.Write(textEntry.EntryId, Locres.Version);
+                            writer.Write(textEntry.EntryId.Replace("\\n", "\n").Replace("\\r", "\r"), Locres.Version);
                             writer.Write(textEntry.Hash);
 
                             if (Locres.Version == EngineVersion.Version3)
