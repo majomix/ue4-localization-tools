@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.Security.Cryptography;
 using Ionic.Zlib;
 using UE4PakEditor.Model.Compression;
+using UE4PakEditor.Model.Encryption;
 
 namespace UE4PakEditor.Model
 {
@@ -12,17 +14,35 @@ namespace UE4PakEditor.Model
     {
         public PakFileStructure Archive { get; private set; }
         
-        public void LoadPakFileStructure(PakBinaryReader reader)
+        public void LoadPakFileStructure(PakBinaryReader reader, int version, string aesKey)
         {
-            reader.BaseStream.Seek(-44, SeekOrigin.End);
+            var startOffset = version >= 8 ? -204 : -44;
+
+            reader.BaseStream.Seek(startOffset, SeekOrigin.End);
             Archive = reader.ReadPakInfo();
 
             reader.BaseStream.Seek(Archive.DataSize, SeekOrigin.Begin);
-            Archive.Directory = reader.ReadPakDirectory();
+
+            var readerToUse = reader;
+
+            if (aesKey != null)
+            {
+                var soapHex = SoapHexBinary.Parse(aesKey);
+
+                var fileTree = reader.ReadBytes((int)Archive.FileTreeSize);
+                var decryptedFileTree = AesHandler.DecryptAes(fileTree, soapHex.Value);
+
+                var memoryStream = new MemoryStream(decryptedFileTree);
+                var memoryReader = new PakBinaryReader(memoryStream);
+
+                readerToUse = memoryReader;
+            }
+
+            Archive.Directory = readerToUse.ReadPakDirectory();
 
             for (int i = 0; i < Archive.Directory.NumberOfEntries; i++)
             {
-                var currentEntry = reader.ReadDirectoryLevelPakEntry();
+                var currentEntry = readerToUse.ReadDirectoryLevelPakEntry();
                 Archive.Directory.Entries.Add(currentEntry);
 
                 if (i > 0)
@@ -33,6 +53,11 @@ namespace UE4PakEditor.Model
                     previousEntry.NextOffset = currentEntry.Offset;
                     previousEntry.RealSize = realEntrySize;
                 }
+            }
+
+            if (aesKey != null)
+            {
+                readerToUse.Close();
             }
 
             var compressionTypes  = Archive.Directory.Entries.Select(entry => entry.CompressionType).Distinct();
@@ -69,6 +94,7 @@ namespace UE4PakEditor.Model
                             }
                             break;
                         case 4:
+                        case 16400:
                             var remainingSizeToUncompress = pakEntry.UncompressedSize;
                             foreach (var chunk in pakEntry.Chunks)
                             {
@@ -133,6 +159,7 @@ namespace UE4PakEditor.Model
                         break;
                     case 1:
                     case 4:
+                    case 16400:
                         foreach (var chunk in pakEntry.Chunks)
                         {
                             var compressedData = reader.ReadBytes((int)(chunk.ChunkEnd - chunk.ChunkOffset));
@@ -178,12 +205,17 @@ namespace UE4PakEditor.Model
             Archive.Hash = HashBytes(streamBytes);
             Archive.FileTreeSize = streamBytes.Length;
 
-            if (Archive.Version == 7)
+            if (Archive.Version >= 7)
             {
                 writer.Write(new byte[17]);
             }
 
             writer.Write(Archive);
+
+            if (Archive.Version == 8)
+            {
+                writer.Write(new byte[160]);
+            }
         }
 
         public byte[] HashBytes(byte[] input)
@@ -194,12 +226,12 @@ namespace UE4PakEditor.Model
             }
         }
 
-        public void CreateNewPakFile(string mountPoint, List<PakEntry> entries)
+        public void CreateNewPakFile(string mountPoint, List<PakEntry> entries, int version)
         {
             Archive = new PakFileStructure
             {
                 Signature = 1517228769,
-                Version = 7,
+                Version = version,
                 Directory = new PakDirectory
                 {
                     Name = mountPoint,

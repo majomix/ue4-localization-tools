@@ -56,6 +56,10 @@ namespace UE4PakEditor.ViewModel
             }
         }
 
+        public int Version { get; set; }
+
+        public string AesKey { get; set; }
+
         public event PropertyChangedEventHandler PropertyChanged;
         public event EventHandler RequestClose;
 
@@ -133,7 +137,7 @@ namespace UE4PakEditor.ViewModel
             using (FileStream fileStream = File.Open(LoadedFilePath, FileMode.Open))
             {
                 PakBinaryReader reader = new PakBinaryReader(fileStream);
-                Model.LoadPakFileStructure(reader);
+                Model.LoadPakFileStructure(reader, Version, AesKey);
                 OnPropertyChanged("Model");
             }
         }
@@ -191,7 +195,7 @@ namespace UE4PakEditor.ViewModel
                 }
             }
 
-            Model.CreateNewPakFile(MountPoint, entries);
+            Model.CreateNewPakFile(MountPoint, entries, Version);
 
             using (var outputFileStream = File.Open(targetPath, FileMode.Create))
             {

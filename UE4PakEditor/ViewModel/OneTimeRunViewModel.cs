@@ -27,6 +27,8 @@ namespace UE4PakEditor.ViewModel
 
         public OneTimeRunViewModel()
         {
+            Version = 7;
+
             ParseCommandLine();
             Model = new PakEditor();
 
@@ -75,25 +77,25 @@ namespace UE4PakEditor.ViewModel
                 .Add("pak=", value => LoadedFilePath = CreateFullPath(value, true))
                 .Add("mountpoint=", value => MountPoint = value)
                 .Add("padding", value => Padding = true)
-                .Add("dir=", value => _targetDirectory = CreateFullPath(value, false));
+                .Add("dir=", value => _targetDirectory = CreateFullPath(value, false))
+                .Add("version=", value => Version = Int32.Parse(value))
+                .Add("aes=", value => AesKey = value);
+
 
             options.Parse(Environment.GetCommandLineArgs());
         }
 
         private string CreateFullPath(string path, bool checkForFileExistence)
         {
-            if (String.IsNullOrEmpty(path)) return null;
+            if (string.IsNullOrEmpty(path)) return null;
 
             if (path.Contains(':') && CheckForExistence(path, checkForFileExistence))
             {
                 return path;
             }
-            else
-            {
-                string resultPath = Directory.GetCurrentDirectory() + @"\" + path.Replace('/', '\\');
-                if (CheckForExistence(resultPath, checkForFileExistence)) return resultPath;
-                else return null;
-            }
+
+            string resultPath = Directory.GetCurrentDirectory() + @"\" + path.Replace('/', '\\');
+            return CheckForExistence(resultPath, checkForFileExistence) ? resultPath : null;
         }
 
         private bool CheckForExistence(string path, bool checkForFile)

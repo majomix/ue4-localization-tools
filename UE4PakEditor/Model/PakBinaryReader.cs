@@ -5,7 +5,7 @@ namespace UE4PakEditor.Model
 {
     internal class PakBinaryReader : BinaryReader
     {
-        public PakBinaryReader(FileStream fileStream)
+        public PakBinaryReader(Stream fileStream)
             : base(fileStream) { }
 
         public override string ReadString()

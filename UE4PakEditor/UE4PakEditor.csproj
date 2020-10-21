@@ -101,6 +101,7 @@
     </ApplicationDefinition>
     <Compile Include="Model\Compression\Lz4Handler.cs" />
     <Compile Include="Model\Compression\OodleHandler.cs" />
+    <Compile Include="Model\Encryption\AesHandler.cs" />
     <Compile Include="Model\Options.cs" />
     <Compile Include="Model\PakChunkDescriptor.cs" />
     <Compile Include="ViewModel\Commands\AbstractWorkerCommand.cs" />
@@ -222,6 +223,7 @@
     <Resource Include="View\Jedi.bmp" />
     <Resource Include="View\Spyro.bmp" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
