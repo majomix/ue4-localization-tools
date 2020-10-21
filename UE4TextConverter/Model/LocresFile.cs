@@ -5,7 +5,8 @@ namespace UE4TextConverter.Model
     public enum EngineVersion
     {
         Version3,
-        Version4
+        Version4,
+        Version4_2
     }
 
     public class LocresFile

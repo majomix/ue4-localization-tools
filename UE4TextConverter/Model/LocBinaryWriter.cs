@@ -13,10 +13,17 @@ namespace UE4TextConverter.Model
             return (int)((size - 1) ^ 0xFFFFFFFF);
         }
 
-        public override void Write(string value)
+        public void Write(string value, EngineVersion version)
         {
             if (string.IsNullOrEmpty(value))
             {
+                if (version == EngineVersion.Version4_2)
+                {
+                    Write(1);
+                    Write((byte)0);
+                    return;
+                }
+
                 Write(0);
                 return;
             }
