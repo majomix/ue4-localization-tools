@@ -107,6 +107,7 @@ namespace UE4TextConverter.Model
                     }
                 }
             }
+
         }
 
         public void LoadTextFile(string path)
@@ -123,33 +124,38 @@ namespace UE4TextConverter.Model
 
                 while ((line = reader.ReadLine()) != null)
                 {
-                    line = line.Trim();
+                    var trimmedLine = line.Trim();
                     if (isFirstLine)
                     {
                         isFirstLine = false;
 
-                        if (line.Equals("v4"))
+                        if (trimmedLine.Equals("v4"))
                         {
                             Locres.Version = EngineVersion.Version4;
                             Locres.Flags = 1;
-                            continue;
                         }
-
-                        if (line.Equals("v4.2"))
+                        else if (trimmedLine.Equals("v4.2"))
                         {
                             Locres.Version = EngineVersion.Version4_2;
                             Locres.Flags = 2;
-                            continue;
+                        }
+                        else
+                        {
+                            Locres.Version = EngineVersion.Version3;
+                            currentSection = new LocSection { Name = string.Empty, NamespaceHash = 0 };
+                            Locres.LocSections.Add(currentSection);
                         }
                     }
 
                     if (Locres.Version != EngineVersion.Version4_2)
                     {
                         // new section
-                        if (line.StartsWith("[") && line.EndsWith("]"))
+                        if (trimmedLine.StartsWith("[") && trimmedLine.EndsWith("]"))
                         {
                             currentSection = new LocSection
-                                {Name = line.Equals("[]") ? string.Empty : line.Split('[', ']')[1]};
+                            {
+                                Name = line.Equals("[]") ? string.Empty : line.Split('[', ']')[1]
+                            };
                             Locres.LocSections.Add(currentSection);
                         }
                         else if (currentSection != null)
@@ -172,7 +178,7 @@ namespace UE4TextConverter.Model
                                 {
                                     var entry = new TextEntry
                                     {
-                                        Hash = Convert.ToUInt32(tokens[0], 16),
+                                        Hash = Convert.ToUInt32(tokens[0].Trim(), 16),
                                         EntryId = entryId,
                                         Entry = tokens[2],
                                         NumberOfLine = lineIndex
@@ -185,9 +191,9 @@ namespace UE4TextConverter.Model
                     else
                     {
                         // new section
-                        if (line.StartsWith("[") && line.EndsWith("]"))
+                        if (trimmedLine.StartsWith("[") && trimmedLine.EndsWith("]"))
                         {
-                            var insideBrackets = line.Split('[', ']')[1];
+                            var insideBrackets = trimmedLine.Split('[', ']')[1];
                             var split = insideBrackets.Split('|');
                             currentSection = new LocSection { Name = split[0], NamespaceHash = Convert.ToUInt32(split[1], 16) };
                             Locres.LocSections.Add(currentSection);
@@ -208,12 +214,21 @@ namespace UE4TextConverter.Model
                                 }
 
                                 var entryIds = tokens[2].Split(',');
-                                foreach (var entryId in entryIds)
+                                var secondaryHashes = tokens[1].Split(',');
+
+                                if (entryIds.Length != secondaryHashes.Length)
                                 {
+                                    throw new Exception("Length of entry IDs and secondary hashes does not match!");
+                                }
+
+                                for (var i = 0; i < entryIds.Length; i++)
+                                {
+                                    var entryId = entryIds[i];
+                                    var secondaryHash = secondaryHashes[i];
                                     var entry = new TextEntry
                                     {
-                                        Hash = Convert.ToUInt32(tokens[0], 16),
-                                        Hash2 = Convert.ToUInt32(tokens[1], 16),
+                                        Hash = Convert.ToUInt32(tokens[0].Trim(), 16),
+                                        Hash2 = Convert.ToUInt32(secondaryHash, 16),
                                         EntryId = entryId,
                                         Entry = text,
                                         NumberOfLine = lineIndex
@@ -336,6 +351,7 @@ namespace UE4TextConverter.Model
 
                             if (sortById)
                             {
+                                //entries = entries.OrderBy(entry => entry.EntryId.Length).ThenBy(entry => entry.EntryId).ToList();
                                 entries = entries.OrderBy(entry => entry.EntryId).ToList();
                             }
 
@@ -343,7 +359,7 @@ namespace UE4TextConverter.Model
                             {
                                 if (Locres.Version != EngineVersion.Version4_2)
                                 {
-                                    writer.WriteLine("{0:X8}\t{1}={2}", textEntry.Hash, textEntry.EntryId, textEntry.Entry.Replace("\n", "\\n").Replace("\r", "\\r"));
+                                    writer.WriteLine("{0:X8}\t{1}\t{2}", textEntry.Hash, textEntry.EntryId, textEntry.Entry.Replace("\n", "\\n").Replace("\r", "\\r"));
                                 }
                                 else
                                 {
@@ -353,14 +369,14 @@ namespace UE4TextConverter.Model
                         }
                         else
                         {
-                            foreach (var grouping in locSection.Entries.GroupBy(entry => entry.Hash))
+                            foreach (var grouping in GroupBySections(locSection, sortById))
                             {
                                 var lineIds = string.Join(",", grouping.Select(group => group.EntryId));
                                 var secondaryHashes = string.Join(",", grouping.Select(group => group.Hash2.ToString("X8")));
 
                                 if (Locres.Version != EngineVersion.Version4_2)
                                 {
-                                    writer.WriteLine("{0:X8}\t{1}={2}", grouping.Key, lineIds,
+                                    writer.WriteLine("{0:X8}\t{1}\t{2}", grouping.Key, lineIds,
                                         grouping.First().Entry.Replace("\n", "\\n").Replace("\r", "\\r"));
                                 }
                                 else
@@ -373,6 +389,17 @@ namespace UE4TextConverter.Model
                     }
                 }
             }
+        }
+
+        private static IEnumerable<IGrouping<uint, TextEntry>> GroupBySections(LocSection locSection, bool sortById)
+        {
+            if (sortById)
+            {
+                return locSection.Entries.GroupBy(entry => entry.Hash).OrderBy(entry => entry.First().EntryId);
+                //return locSection.Entries.GroupBy(entry => entry.Hash).OrderBy(entry => entry.First().EntryId.Length).ThenBy(entry => entry.First().EntryId);
+            }
+            
+            return locSection.Entries.GroupBy(entry => entry.Hash);
         }
     }
 }

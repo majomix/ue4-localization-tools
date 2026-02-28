@@ -3,7 +3,7 @@ using System.Text;
 
 namespace UE4TextConverter.Model
 {
-    internal class LocBinaryWriter : BinaryWriter
+    public class LocBinaryWriter : BinaryWriter
     {
         public LocBinaryWriter(FileStream fileStream, Encoding encoding)
             : base(fileStream, encoding) { }
