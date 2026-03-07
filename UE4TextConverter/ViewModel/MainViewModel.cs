@@ -12,6 +12,10 @@ namespace UE4TextConverter.ViewModel
         private bool? _export;
         private bool _compact;
         private bool _sortById;
+        private bool _batchExport;
+        private bool _batchImport;
+        private string _batchOperationDir;
+        private string _batchOperationLang = "en";
 
         public string LocresFile
         {
@@ -47,9 +51,41 @@ namespace UE4TextConverter.ViewModel
             CloseWindow = true;
             Converter = new TextConverter();
 
-            if(_export != null)
+            if (_batchExport)
             {
-                if(_export == true)
+                if (string.IsNullOrEmpty(_batchOperationDir))
+                {
+                    Console.Error.WriteLine("Error: --dir parameter is required for batch export.");
+                    return;
+                }
+                if (string.IsNullOrEmpty(TextFile))
+                {
+                    Console.Error.WriteLine("Error: --txt parameter is required for batch export.");
+                    return;
+                }
+                new BatchConverter(_compact, _sortById).BatchExport(_batchOperationDir, TextFile, _batchOperationLang);
+                return;
+            }
+
+            if (_batchImport)
+            {
+                if (string.IsNullOrEmpty(TextFile))
+                {
+                    Console.Error.WriteLine("Error: --txt parameter is required for batch import.");
+                    return;
+                }
+                if (string.IsNullOrEmpty(_batchOperationDir))
+                {
+                    Console.Error.WriteLine("Error: --dir parameter is required for batch import.");
+                    return;
+                }
+                new BatchConverter(_compact, _sortById).BatchImport(TextFile, _batchOperationDir);
+                return;
+            }
+
+            if (_export != null)
+            {
+                if (_export == true)
                 {
                     Converter.LoadLocresFile(LocresFile);
                     Converter.WriteTextFile(TextFile, _compact, _sortById);
@@ -71,7 +107,11 @@ namespace UE4TextConverter.ViewModel
                 .Add("import", value => _export = false)
                 .Add("compact", value => _compact = true)
                 .Add("sort", value => _sortById = true)
-                .Add("close", value => CloseWindow = true);
+                .Add("close", value => CloseWindow = true)
+                .Add("batch-export", value => _batchExport = true)
+                .Add("batch-import", value => _batchImport = true)
+                .Add("dir=", value => _batchOperationDir = Path.GetFullPath(value))
+                .Add("lang=", value => _batchOperationLang = value);
 
             options.Parse(Environment.GetCommandLineArgs());
         }
