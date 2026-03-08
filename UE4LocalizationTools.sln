@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29806.167
+# Visual Studio Version 18
+VisualStudioVersion = 18.2.11415.280 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UE4LocresConverter", "UE4TextConverter\UE4LocresConverter.csproj", "{8725D50B-0B39-4359-BAF5-508B38E4DA7C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UE4PakEditor", "UE4PakEditor\UE4PakEditor.csproj", "{82FC2441-D8E4-412A-9196-85E2746287B9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UE4UexpEditor", "UE4UexpEditor\UE4UexpEditor.csproj", "{1BCEC344-A159-4621-9653-5E0B1657E165}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UE4BulkAssetEditor", "UE4BulkAssetEditor\UE4BulkAssetEditor.csproj", "{F005850E-F8E1-4D7E-8F5B-645C1B92C6A5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -66,6 +68,22 @@ Global
 		{1BCEC344-A159-4621-9653-5E0B1657E165}.Release|x64.Build.0 = Release|Any CPU
 		{1BCEC344-A159-4621-9653-5E0B1657E165}.Release|x86.ActiveCfg = Release|Any CPU
 		{1BCEC344-A159-4621-9653-5E0B1657E165}.Release|x86.Build.0 = Release|Any CPU
+		{F005850E-F8E1-4D7E-8F5B-645C1B92C6A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F005850E-F8E1-4D7E-8F5B-645C1B92C6A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F005850E-F8E1-4D7E-8F5B-645C1B92C6A5}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{F005850E-F8E1-4D7E-8F5B-645C1B92C6A5}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{F005850E-F8E1-4D7E-8F5B-645C1B92C6A5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F005850E-F8E1-4D7E-8F5B-645C1B92C6A5}.Debug|x64.Build.0 = Debug|Any CPU
+		{F005850E-F8E1-4D7E-8F5B-645C1B92C6A5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F005850E-F8E1-4D7E-8F5B-645C1B92C6A5}.Debug|x86.Build.0 = Debug|Any CPU
+		{F005850E-F8E1-4D7E-8F5B-645C1B92C6A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F005850E-F8E1-4D7E-8F5B-645C1B92C6A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F005850E-F8E1-4D7E-8F5B-645C1B92C6A5}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{F005850E-F8E1-4D7E-8F5B-645C1B92C6A5}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{F005850E-F8E1-4D7E-8F5B-645C1B92C6A5}.Release|x64.ActiveCfg = Release|Any CPU
+		{F005850E-F8E1-4D7E-8F5B-645C1B92C6A5}.Release|x64.Build.0 = Release|Any CPU
+		{F005850E-F8E1-4D7E-8F5B-645C1B92C6A5}.Release|x86.ActiveCfg = Release|Any CPU
+		{F005850E-F8E1-4D7E-8F5B-645C1B92C6A5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
