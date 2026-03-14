@@ -277,12 +277,12 @@ namespace UE4TextConverter.Model
                                 writer.Write(textEntry.Hash2);
                             }
 
-                            writer.Write(textEntry.EntryId.Replace("\\n", "\n").Replace("\\r", "\r"), Locres.Version);
+                            writer.Write(textEntry.EntryId.Replace("\\n", "\n").Replace("\\r", "\r").Replace("\\t", "\t"), Locres.Version);
                             writer.Write(textEntry.Hash);
 
                             if (Locres.Version == EngineVersion.Version3)
                             {
-                                writer.Write(textEntry.Entry.Replace("\\n", "\n").Replace("\\r", "\r"), Locres.Version);
+                                writer.Write(textEntry.Entry.Replace("\\n", "\n").Replace("\\r", "\r").Replace("\\t", "\t"), Locres.Version);
                             }
                             else if (Locres.Version == EngineVersion.Version4 || Locres.Version == EngineVersion.Version4_2)
                             {
@@ -302,7 +302,7 @@ namespace UE4TextConverter.Model
                         {
                             var line = distinctTextLines[i];
 
-                            writer.Write(line.First().Entry.Replace("\\n", "\n").Replace("\\r", "\r"), Locres.Version);
+                            writer.Write(line.First().Entry.Replace("\\n", "\n").Replace("\\r", "\r").Replace("\\t", "\t"), Locres.Version);
 
                             if (Locres.Version == EngineVersion.Version4_2)
                             {
@@ -359,11 +359,11 @@ namespace UE4TextConverter.Model
                             {
                                 if (Locres.Version != EngineVersion.Version4_2)
                                 {
-                                    writer.WriteLine("{0:X8}\t{1}\t{2}", textEntry.Hash, textEntry.EntryId, textEntry.Entry.Replace("\n", "\\n").Replace("\r", "\\r"));
+                                    writer.WriteLine("{0:X8}\t{1}\t{2}", textEntry.Hash, textEntry.EntryId, textEntry.Entry.Replace("\n", "\\n").Replace("\r", "\\r").Replace("\t", "\\t"));
                                 }
                                 else
                                 {
-                                    writer.WriteLine("{0:X8}\t{1:X8}\t{2}\t{3}", textEntry.Hash, textEntry.Hash2, textEntry.EntryId.Replace("\n", "\\n").Replace("\r", "\\r"), textEntry.Entry.Replace("\n", "\\n").Replace("\r", "\\r"));
+                                    writer.WriteLine("{0:X8}\t{1:X8}\t{2}\t{3}", textEntry.Hash, textEntry.Hash2, textEntry.EntryId.Replace("\n", "\\n").Replace("\r", "\\r").Replace("\t", "\\t"), textEntry.Entry.Replace("\n", "\\n").Replace("\r", "\\r").Replace("\t", "\\t"));
                                 }
                             }
                         }
@@ -377,12 +377,12 @@ namespace UE4TextConverter.Model
                                 if (Locres.Version != EngineVersion.Version4_2)
                                 {
                                     writer.WriteLine("{0:X8}\t{1}\t{2}", grouping.Key, lineIds,
-                                        grouping.First().Entry.Replace("\n", "\\n").Replace("\r", "\\r"));
+                                        grouping.First().Entry.Replace("\n", "\\n").Replace("\r", "\\r").Replace("\t", "\\t"));
                                 }
                                 else
                                 {
                                     writer.WriteLine("{0:X8}\t{1}\t{2}\t{3}", grouping.Key, secondaryHashes, lineIds,
-                                        grouping.First().Entry.Replace("\n", "\\n").Replace("\r", "\\r"));
+                                        grouping.First().Entry.Replace("\n", "\\n").Replace("\r", "\\r").Replace("\t", "\\t"));
                                 }
                             }
                         }
