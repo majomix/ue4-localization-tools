@@ -351,8 +351,7 @@ namespace UE4TextConverter.Model
 
                             if (sortById)
                             {
-                                //entries = entries.OrderBy(entry => entry.EntryId.Length).ThenBy(entry => entry.EntryId).ToList();
-                                entries = entries.OrderBy(entry => entry.EntryId).ToList();
+                                entries = entries.OrderBy(entry => entry.EntryId, NaturalStringComparer.Instance).ToList();
                             }
 
                             foreach (var textEntry in entries)
@@ -395,8 +394,7 @@ namespace UE4TextConverter.Model
         {
             if (sortById)
             {
-                return locSection.Entries.GroupBy(entry => entry.Hash).OrderBy(entry => entry.First().EntryId);
-                //return locSection.Entries.GroupBy(entry => entry.Hash).OrderBy(entry => entry.First().EntryId.Length).ThenBy(entry => entry.First().EntryId);
+                return locSection.Entries.GroupBy(entry => entry.Hash).OrderBy(entry => entry.First().EntryId, NaturalStringComparer.Instance);
             }
             
             return locSection.Entries.GroupBy(entry => entry.Hash);

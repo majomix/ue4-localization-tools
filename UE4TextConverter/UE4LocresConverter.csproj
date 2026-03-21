@@ -91,6 +91,7 @@
     <Compile Include="ViewModel\BaseViewModel.cs" />
     <Compile Include="Model\LocBinaryReader.cs" />
     <Compile Include="Model\LocSection.cs" />
+    <Compile Include="Model\NaturalStringComparer.cs" />
     <Compile Include="Model\TextConverter.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="Model\TextEntry.cs" />
